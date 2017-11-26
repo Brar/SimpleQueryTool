@@ -30,7 +30,6 @@ namespace SimpleQueryTool
                     connection.Open();
                     using (DbDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
                     {
-                        WriteTable(reader.GetSchemaTable());
                         do
                         {
                             PrintReader(reader);
@@ -77,31 +76,6 @@ namespace SimpleQueryTool
 
                     var value = reader.GetValue(i);
                     Console.Write(FormatValue(value));
-                }
-                Console.WriteLine();
-            }
-        }
-
-        private static void WriteTable(DataTable table)
-        {
-            for(int i = 0; i< table.Columns.Count; i++)
-            {
-                if (i > 0)
-                    Console.Write("\t");
-
-                var col = table.Columns[i];
-                Console.Write(col.ColumnName);
-            }
-            Console.WriteLine();
-            foreach(DataRow row in table.Rows)
-            {
-                for (int i = 0; i < table.Columns.Count; i++)
-                {
-                    if (i > 0)
-                        Console.Write("\t");
-
-                    var field = row[i];
-                    Console.Write(FormatValue(field));
                 }
                 Console.WriteLine();
             }
