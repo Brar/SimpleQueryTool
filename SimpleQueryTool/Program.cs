@@ -99,7 +99,7 @@ namespace SimpleQueryTool
 
         private static bool TryGetConnectionStringAndFactory(string connectionStringName, out string connectionString, out DbProviderFactory factory)
         {
-            if (TyrGetConnectionStringSettings(connectionStringName, out ConnectionStringSettings settings))
+            if (TryGetConnectionStringSettings(connectionStringName, out ConnectionStringSettings settings))
             {
                 connectionString = settings.ConnectionString;
                 factory = DbProviderFactories.GetFactory(settings.ProviderName);
@@ -110,7 +110,7 @@ namespace SimpleQueryTool
             return false;
         }
 
-        private static bool TyrGetConnectionStringSettings(string connectionStringName, out ConnectionStringSettings settings)
+        private static bool TryGetConnectionStringSettings(string connectionStringName, out ConnectionStringSettings settings)
         {
             ConnectionStringSettingsCollection settingsCollection = ConfigurationManager.ConnectionStrings;
             if (settingsCollection != null)
