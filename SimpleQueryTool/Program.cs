@@ -90,8 +90,25 @@ namespace SimpleQueryTool
             if (value is Array arrayValue)
                 return FormatArray(arrayValue);
 
-            // Here some better attempt to format the value might happen in practice but ToString() should work for now.
-            return value.ToString();
+            if(IsNumber(value))
+                return value.ToString();
+
+            return "\"" + value + "\"";
+        }
+
+        private static bool IsNumber(object value)
+        {
+            return value is sbyte
+                   || value is byte
+                   || value is short
+                   || value is ushort
+                   || value is int
+                   || value is uint
+                   || value is long
+                   || value is ulong
+                   || value is float
+                   || value is double
+                   || value is decimal;
         }
 
         private static string FormatArray(Array array)
