@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Text;
 
 namespace SimpleQueryTool
 {
@@ -83,18 +84,46 @@ namespace SimpleQueryTool
 
         private static string FormatValue(object value)
         {
-            if (value is Array arrayValue)
-            {
-                return "[" + string.Join(",", arrayValue.OfType<object>().Select(o => FormatValue(o))) + "]";
-            }
-            else
-            {
-                if (value == null || value == DBNull.Value)
-                    return "null";
+            if (value == null || value == DBNull.Value)
+                return "null";
 
-                // Here some better attempt to format the value might happen in practice but ToString() should work for now.
-                return value.ToString();
+            if (value is Array arrayValue)
+                return FormatArray(arrayValue);
+
+            // Here some better attempt to format the value might happen in practice but ToString() should work for now.
+            return value.ToString();
+        }
+
+        private static string FormatArray(Array array)
+        {
+            StringBuilder sb = new StringBuilder();
+            int[] indices = new int[array.Rank];
+            int currentDimIndex = 0;
+            AppendValues(sb, array, ref currentDimIndex, indices);
+            sb.Length = sb.Length - 1;
+            return sb.ToString();
+        }
+
+        private static void AppendValues(StringBuilder sb, Array array, ref int currentDimIndex, int[] indices)
+        {
+            sb.Append("[");
+            for (int i = array.GetLowerBound(currentDimIndex); i <= array.GetUpperBound(currentDimIndex); i++)
+            {
+                indices[currentDimIndex] = i;
+                if (currentDimIndex < array.Rank - 1)
+                {
+                    currentDimIndex++;
+                    AppendValues(sb, array, ref currentDimIndex, indices);
+                }
+                else
+                {
+                    sb.Append(FormatValue(array.GetValue(indices)));
+                    sb.Append(',');
+                }
             }
+            currentDimIndex--;
+            sb.Length = sb.Length - 1;
+            sb.Append("],");
         }
 
         private static bool TryGetConnectionStringAndFactory(string connectionStringName, out string connectionString, out DbProviderFactory factory)
